@@ -1,0 +1,18 @@
+version: '2'
+services:
+  jenkins-master:
+    image: jenkins/jenkins:lts-alpine
+    environment:
+      JENKINS_OPTS: --prefix=/jenkins
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
+  jenkins-slave:
+    image: jenkins/ssh-slave:latest
+    environment:
+      JENKINS_SLAVE_SSH_PUBKEY: ${SECRET_PUB_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  jenkins-data:

@@ -1,0 +1,7 @@
+version: '2'
+services:
+  jenkins-master:
+    environment:
+      JENKINS_OPTS: ""
+    ports:
+      - 8080:8080
