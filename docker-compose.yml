@@ -1,18 +1,60 @@
 version: '2'
 services:
   jenkins-master:
-    image: jenkins/jenkins:lts-alpine
+    image: jenkinsci/blueocean
     environment:
       JENKINS_OPTS: --prefix=/jenkins
+    depends_on:
+      - ssh-keygen
     volumes:
       - jenkins-data:/var/jenkins_home
 
   jenkins-slave:
     image: jenkins/ssh-slave:latest
-    environment:
-      JENKINS_SLAVE_SSH_PUBKEY: ${SECRET_PUB_KEY}
+    depends_on:
+      - ssh-keygen
+    entrypoint: bash -exc \
+      "sleep 30s &&
+      env | grep _ >> /etc/environment &&
+      ssh-keygen -A &&
+      exec /usr/sbin/sshd -D -e"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - ssh-dir:/home/jenkins/.ssh
+
+  sonar-database:
+    image: postgres:9-alpine
+    environment:
+      POSTGRES_DB: sonar
+      POSTGRES_PASSWORD: ${RANDOM_PASSWORD}
+      POSTGRES_USER: sonar
+    volumes:
+      - sonar-database-data:/var/lib/postgresql/data
+
+  sonarqube:
+    image: sonarqube:7.1-alpine
+    depends_on:
+      - sonar-database
+    environment:
+      SONARQUBE_JDBC_PASSWORD: ${RANDOM_PASSWORD}
+      SONARQUBE_JDBC_URL: jdbc:postgresql://sonar-database:5432/sonar
+      SONARQUBE_JDBC_USERNAME: sonar
+    command: -Dsonar.web.context=/sonar
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+
+  ssh-keygen:
+    restart: "no"
+    image: jenkins/ssh-slave:latest
+    working_dir: /home/jenkins/.ssh
+    entrypoint: bash -exc \
+      "ssh-keygen -t rsa -N '' -f id_rsa &&
+      cp id_rsa.pub authorized_keys &&
+      cat id_rsa"
+    volumes:
+      - ssh-dir:/home/jenkins/.ssh
 
 volumes:
   jenkins-data:
+  ssh-dir:
+  sonar-database-data:
+  sonarqube-data:
