@@ -10,14 +10,16 @@ services:
       - jenkins-data:/var/jenkins_home
 
   jenkins-slave:
-    image: jenkins/ssh-slave:latest
+    image: wedroid/jenkins-dind-ssh-slave
+    privileged: true
     depends_on:
       - ssh-keygen
     entrypoint: bash -exc \
-      "sleep 30s &&
-      env | grep _ >> /etc/environment &&
-      ssh-keygen -A &&
-      exec /usr/sbin/sshd -D -e"
+      "sleep 10s &&
+      (dind dockerd > /dev/null &) &&
+      (env | grep _ >> /etc/environment &&
+        ssh-keygen -A &&
+        exec /usr/sbin/sshd -D -e)"
     volumes:
       - ssh-dir:/home/jenkins/.ssh
 
