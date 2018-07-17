@@ -5,3 +5,5 @@ services:
       JENKINS_OPTS: ""
     ports:
       - 8080:8080
+  jenkins-slave:
+    build: jenkins-slave
