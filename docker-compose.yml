@@ -1,7 +1,7 @@
 version: '2'
 services:
   jenkins-master:
-    image: jenkinsci/blueocean
+    image: pumuky.cps.unizar.es/infrastructure/jenkins-master
     environment:
       JENKINS_OPTS: --prefix=/jenkins
     depends_on:
