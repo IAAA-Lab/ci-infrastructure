@@ -16,6 +16,7 @@
     - [Project settings](#project-settings)
     - [Github webhook config](#github-webhook-config)
 - [Jenkinsfile](#jenkinsfile)
+- [SonarQube](#sonarqube)
 
 <!-- TOC END -->
 
@@ -182,3 +183,19 @@ Payload URL: http(s)://{JENKINS_HOMEPAGE_URL}/github-webhook/
 ## Jenkinsfile
 
 The key of this set up is that the ci-pipe is managed under version control, in the root of each project unlike the traditional Jenkins where the config lived only in the Jenkins Master.
+
+## SonarQube
+
+> Available soon
+
+# Host minimal Requierements
+
+The tecnical requirements of the services included in this bundle are not trivial:
+
+Average memory allocation is:
+
+- Jenkins Master: ~1.30 GiB
+- Jenkins Slave (waiting): ~300 MiB
+- Jenkins Slave (running pipes): <highly project-dependent>
+- SonarQube: 1.77 GiB
+- Sonar Databse (Postgre SQL): ~50 MiB
